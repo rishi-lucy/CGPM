@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citizen Dashboard - CGMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+         :root {
+            /* Government Color Palette */
+            --gov-primary: #0B3D91;
+            --gov-secondary: #1E6FD9;
+            --gov-background: #F4F6F9;
+            --gov-card-bg: #FFFFFF;
+            --gov-border: #D6DCE5;
+            /* Status Colors */
+            --status-pending: #FFC107;
+            --status-in-progress: #0D6EFD;
+            --status-resolved: #198754;
+            --status-rejected: #DC3545;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gov-background);
+            min-height: 100vh;
+        }
+        /* Government Header */
+        
+        .gov-header {
+            background: linear-gradient(135deg, var(--gov-primary) 0%, #082d6b 100%);
+            padding: 0;
+            box-shadow: 0 4px 20px rgba(11, 61, 145, 0.2);
+        }
+        
+        .gov-header .navbar {
+            padding: 0.75rem 0;
+        }
+        
+        .gov-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .gov-brand-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .gov-brand-text h4 {
+            color: white;
+            font-weight: 700;
+            font-size: 1.35rem;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+        
+        .gov-brand-text span {
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 500;
+        }
+        
+        .gov-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.12);
+            padding: 8px 16px;
+            border-radius: 50px;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--gov-secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        /* Main Content */
+        
+        .main-content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            color: var(--gov-primary);
+            font-weight: 700;
+            font-size: 1.85rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+        /* Stats Cards */
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .stat-card {
+            background: var(--gov-card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--gov-border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 160px;
+        }
+        
+        .stat-card>* {
+            flex-shrink: 0;
+        }
+        
+        .stat-card .stat-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            margin-top: auto;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+        }
+        
+        .stat-card.total::before {
+            background: var(--gov-primary);
+        }
+        
+        .stat-card.in-progress::before {
+            background: var(--status-in-progress);
+        }
+        
+        .stat-card.resolved::before {
+            background: var(--status-resolved);
+        }
+        
+        .stat-card.pending::before {
+            background: var(--status-pending);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(11, 61, 145, 0.12);
+            border-color: var(--gov-secondary);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card.total .stat-icon {
+            background: rgba(11, 61, 145, 0.1);
+            color: var(--gov-primary);
+        }
+        
+        .stat-card.in-progress .stat-icon {
+            background: rgba(13, 110, 253, 0.1);
+            color: var(--status-in-progress);
+        }
+        
+        .stat-card.resolved .stat-icon {
+            background: rgba(25, 135, 84, 0.1);
+            color: var(--status-resolved);
+        }
+        
+        .stat-card.pending .stat-icon {
+            background: rgba(255, 193, 7, 0.15);
+            color: #b38600;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        /* Action Buttons */
+        
+        .action-section {
+            background: var(--gov-card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--gov-border);
+        }
+        
+        .action-section h5 {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem 1.5rem;
+            border-radius: 10px;
+            border: 2px solid var(--gov-border);
+            background: var(--gov-card-bg);
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .action-btn:hover {
+            border-color: var(--gov-primary);
+            background: rgba(11, 61, 145, 0.04);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(11, 61, 145, 0.1);
+            color: var(--gov-primary);
+        }
+        
+        .action-btn i {
+            font-size: 1.5rem;
+            width: 44px;
+            height: 44px;
+            background: var(--gov-background);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover i {
+            background: var(--gov-primary);
+            color: white;
+        }
+        /* Complaints Table */
+        
+        .table-section {
+            background: var(--gov-card-bg);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--gov-border);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--gov-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(11, 61, 145, 0.02);
+        }
+        
+        .table-header h5 {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        
+        .table {
+            margin: 0;
+        }
+        
+        .table thead th {
+            background: var(--gov-background);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 1rem 1.5rem;
+            border: none;
+        }
+        
+        .table tbody td {
+            padding: 1rem 1.5rem;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--gov-border);
+            color: var(--text-primary);
+        }
+        
+        .table tbody tr:hover {
+            background: rgba(11, 61, 145, 0.03);
+        }
+        
+        .complaint-id {
+            font-weight: 600;
+            color: var(--gov-primary);
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+        }
+        
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: var(--gov-background);
+            color: var(--text-secondary);
+        }
+        
+        .category-badge i {
+            font-size: 0.75rem;
+        }
+        
+        .location-cell {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-badge.submitted {
+            background: rgba(11, 61, 145, 0.1);
+            color: var(--gov-primary);
+        }
+        
+        .status-badge.under-review {
+            background: rgba(255, 193, 7, 0.15);
+            color: #997404;
+        }
+        
+        .status-badge.assigned {
+            background: rgba(13, 110, 253, 0.1);
+            color: var(--status-in-progress);
+        }
+        
+        .status-badge.in-progress {
+            background: rgba(13, 110, 253, 0.1);
+            color: var(--status-in-progress);
+        }
+        
+        .status-badge.resolved {
+            background: rgba(25, 135, 84, 0.1);
+            color: var(--status-resolved);
+        }
+        
+        .status-badge.rejected {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--status-rejected);
+        }
+        
+        .date-cell {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .view-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: var(--gov-primary);
+            color: white;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: none;
+        }
+        
+        .view-btn:hover {
+            background: var(--gov-secondary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(11, 61, 145, 0.25);
+        }
+        /* Empty State */
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .empty-icon {
+            width: 100px;
+            height: 100px;
+            background: var(--gov-background);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2.5rem;
+            color: var(--text-secondary);
+        }
+        
+        .empty-state h4 {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+        /* Language Dropdown */
+        
+        .lang-dropdown .dropdown-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+        
+        .lang-dropdown .dropdown-toggle::after {
+            margin-left: 8px;
+        }
+        
+        .lang-dropdown .dropdown-menu {
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border: none;
+            padding: 0.5rem;
+        }
+        
+        .lang-dropdown .dropdown-item {
+            border-radius: 8px;
+            padding: 10px 16px;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .lang-dropdown .dropdown-item:hover {
+            background: var(--gov-background);
+            color: var(--gov-primary);
+        }
+        /* Animations */
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stat-card,
+        .action-section,
+        .table-section {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        
+        .stat-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+        
+        .stat-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .stat-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+        
+        .stat-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Government Header -->
+    <header class="gov-header">
+        <div class="container-fluid px-4">
+            <nav class="navbar navbar-expand-lg">
+                <div class="gov-brand">
+                    <div class="gov-brand-icon">
+                        <i class="fas fa-landmark"></i>
+                    </div>
+                    <div class="gov-brand-text">
+                        <h4>Citizen Grievance Management System</h4>
+                        <span>Government Digital Services</span>
+                    </div>
+                </div>
+
+                <div class="gov-header-actions">
+                    <!-- Language Selector -->
+                    <div class="dropdown lang-dropdown">
+                        <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-globe me-2"></i>
+                            {% if current_language == 'en' %}English{% elif current_language == 'hi' %}हिंदी{% elif current_language == 'te' %}తెలుగు{% elif current_language == 'es' %}Español{% elif current_language == 'fr' %}Français{% else %}English{% endif %}
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/set_language/en"><i class="fas fa-check me-2"></i>English</a></li>
+                            <li><a class="dropdown-item" href="/set_language/hi"><i class="fas fa-check me-2"></i>हिंदी</a></li>
+                            <li><a class="dropdown-item" href="/set_language/te"><i class="fas fa-check me-2"></i>తెలుగు</a></li>
+                            <li><a class="dropdown-item" href="/set_language/es"><i class="fas fa-check me-2"></i>Español</a></li>
+                            <li><a class="dropdown-item" href="/set_language/fr"><i class="fas fa-check me-2"></i>Français</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- User Profile -->
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            {{ current_user.name[0]|upper }}
+                        </div>
+                        <div class="d-none d-md-block">
+                            <div style="font-weight: 500; font-size: 0.9rem;">{{ current_user.name }}</div>
+                            <div style="font-size: 0.75rem; opacity: 0.8;">Citizen</div>
+                        </div>
+                    </div>
+
+                    <!-- Logout Button -->
+                    <a href="/logout" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="d-none d-md-inline">Logout</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Title -->
+        <div class="mb-4">
+            <h1 class="page-title">{{ t('welcome') }}, {{ current_user.name }}!</h1>
+            <p class="page-subtitle">Track and manage your civic complaints efficiently</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card total">
+                <div class="stat-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="stat-number">{{ complaints|length }}</div>
+                <div class="stat-label">{{ t('total_complaints') }}</div>
+            </div>
+
+            <div class="stat-card in-progress">
+                <div class="stat-icon">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                <div class="stat-number">{{ complaints|selectattr('status', 'in', ['Assigned', 'In Progress'])|list|length }}</div>
+                <div class="stat-label">{{ t('in_progress') }}</div>
+            </div>
+
+            <div class="stat-card resolved">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-number">{{ complaints|selectattr('status', 'equalto', 'Resolved')|list|length }}</div>
+                <div class="stat-label">{{ t('resolved') }}</div>
+            </div>
+
+            <div class="stat-card pending">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-number">{{ complaints|selectattr('status', 'in', ['Submitted', 'Under Review'])|list|length }}</div>
+                <div class="stat-label">{{ t('pending') }}</div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-section">
+            <h5><i class="fas fa-bolt"></i> Quick Actions</h5>
+            <div class="action-buttons">
+                <a href="/citizen/submit" class="action-btn">
+                    <i class="fas fa-plus-circle"></i>
+                    <div>
+                        <div style="font-weight: 600;">{{ t('submit_complaint') }}</div>
+                        <small style="color: var(--text-secondary);">Register a new issue</small>
+                    </div>
+                </a>
+                <a href="#" class="action-btn" data-bs-toggle="modal" data-bs-target="#trackModal">
+                    <i class="fas fa-search-location"></i>
+                    <div>
+                        <div style="font-weight: 600;">{{ t('track_complaint') }}</div>
+                        <small style="color: var(--text-secondary);">Check complaint status</small>
+                    </div>
+                </a>
+                <a href="#recent-complaints" class="action-btn">
+                    <i class="fas fa-history"></i>
+                    <div>
+                        <div style="font-weight: 600;">View History</div>
+                        <small style="color: var(--text-secondary);">See all complaints</small>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Complaints Table -->
+        <div class="table-section" id="recent-complaints">
+            <div class="table-header">
+                <h5><i class="fas fa-list-alt me-2"></i>{{ t('your_complaints') }}</h5>
+                <span class="badge bg-secondary">{{ complaints|length }} Total</span>
+            </div>
+
+            {% if complaints %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>{{ t('complaint_id') }}</th>
+                            <th>{{ t('title') }}</th>
+                            <th>{{ t('category') }}</th>
+                            <th>{{ t('location') }}</th>
+                            <th>{{ t('status') }}</th>
+                            <th>Media</th>
+                            <th>{{ t('submitted') }}</th>
+                            <th>{{ t('view') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for complaint in complaints[:10] %}
+                        <tr>
+                            <td><span class="complaint-id">{{ complaint.complaint_id }}</span></td>
+                            <td style="font-weight: 500; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ complaint.title }}</td>
+                            <td>
+                                <span class="category-badge">
+                                    {% if complaint.category == 'Roads' %}<i class="fas fa-road"></i>{% elif complaint.category == 'Water' %}<i class="fas fa-water"></i>{% elif complaint.category == 'Electricity' %}<i class="fas fa-lightning"></i>{% elif complaint.category == 'Waste' %}<i class="fas fa-trash"></i>{% elif complaint.category == 'Safety' %}<i class="fas fa-shield-alt"></i>{% else %}<i class="fas fa-ellipsis-h"></i>{% endif %}
+                                    {{ complaint.category }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="location-cell">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ complaint.location[:30] }}{% if complaint.location|length > 30 %}...{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge {{ complaint.status.lower().replace(' ', '-') }}">
+                                    {% if complaint.status == 'Submitted' %}<i class="fas fa-paper-plane"></i>{% elif complaint.status == 'Under Review' %}<i class="fas fa-search"></i>{% elif complaint.status == 'Assigned' %}<i class="fas fa-user-check"></i>{% elif complaint.status == 'In Progress' %}<i class="fas fa-cog"></i>{% elif complaint.status == 'Resolved' %}<i class="fas fa-check"></i>{% endif %}
+                                    {{ complaint.status }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if complaint.image_path %} {% if complaint.image_path.lower().endswith(('.mp4', '.avi', '.mov')) %}
+                                <i class="fas fa-video text-danger" title="Video attached"></i> {% else %}
+                                <i class="fas fa-image text-success" title="Image attached"></i> {% endif %} {% else %}
+                                <span class="text-muted">-</span> {% endif %}
+                            </td>
+                            <td class="date-cell">
+                                <i class="far fa-calendar-alt me-1"></i> {{ complaint.created_at.strftime('%d %b %Y') }}
+                            </td>
+                            <td>
+                                <a href="/citizen/track/{{ complaint.complaint_id }}" class="view-btn">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if complaints|length > 10 %}
+            <div class="text-center py-3 border-top">
+                <a href="#" class="text-primary fw500">View All {{ complaints|length }} Complaints</a>
+            </div>
+            {% endif %} {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h4>{{ t('no_complaints') }}</h4>
+                <p>{{ t('submit_first') }}</p>
+                <a href="/citizen/submit" class="view-btn">
+                    <i class="fas fa-plus"></i> {{ t('submit_complaint') }}
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Track Complaint Modal -->
+    <div class="modal fade" id="trackModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background: var(--gov-primary); color: white;">
+                    <h5 class="modal-title"><i class="fas fa-search-location me-2"></i>Track Your Complaint</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/citizen/track/" method="GET" id="trackForm">
+                        <div class="mb-3">
+                            <label class="form-label">Enter Complaint ID</label>
+                            <input type="text" class="form-control" name="complaint_id" placeholder="CMP-000001" required>
+                        </div>
+                        <button type="submit" class="btn w-100" style="background: var(--gov-primary); color: white;">
+                            <i class="fas fa-search me-2"></i>Track Complaint
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('trackForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var complaintId = this.querySelector('input[name="complaint_id"]').value;
+            window.location.href = '/citizen/track/' + complaintId;
+        });
+    </script>
+</body>
+
+</html>

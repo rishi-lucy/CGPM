@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - CGMP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+         :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            max-width: 450px;
+            width: 100%;
+        }
+        
+        .login-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .login-header h2 {
+            margin: 0;
+            font-weight: 700;
+        }
+        
+        .login-body {
+            padding: 40px;
+        }
+        
+        .form-control {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: none;
+        }
+        
+        .btn-login {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        
+        .btn-login:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .alert {
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-card">
+        <!-- Language Selector -->
+        <div class="position-absolute top-0 end-0 p-2">
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-globe"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/set_language/en">English</a></li>
+                    <li><a class="dropdown-item" href="/set_language/hi">हिंदी</a></li>
+                    <li><a class="dropdown-item" href="/set_language/te">తెలుగు</a></li>
+                    <li><a class="dropdown-item" href="/set_language/es">Español</a></li>
+                    <li><a class="dropdown-item" href="/set_language/fr">Français</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="login-header">
+            <h2><i class="fas fa-building-columns me-2"></i>CGMP</h2>
+            <p class="mb-0 mt-2">{{ t('hero_title') }}</p>
+        </div>
+        <div class="login-body">
+            {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %} {% endif %} {% endwith %}
+
+            <form method="POST" action="/login">
+                <div class="mb-3">
+                    <label class="form-label">{{ t('email') }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                        <input type="email" class="form-control" name="email" required placeholder="{{ t('email') }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ t('password') }}</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            <input type="password" class="form-control" name="password" required placeholder="{{ t('password') }}">
+                        </div>
+                        <button type="submit" class="btn btn-login">
+                    <i class="fas fa-sign-in-alt me-2"></i>{{ t('login') }}
+                </button>
+            </form>
+            <div class="register-link">
+                <p class="mb-0">{{ t('no_account') }} <a href="/register">{{ t('register_here') }}</a></p>
+            </div>
+            <div class="text-center mt-3">
+                <a href="/" class="text-muted"><i class="fas fa-arrow-left me-1"></i>{{ t('back_to_home') }}</a>
+            </div>
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

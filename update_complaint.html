@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Complaint - CGMP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+         :root {
+            /* Government Color Palette */
+            --gov-primary: #0B3D91;
+            --gov-secondary: #1E6FD9;
+            --gov-background: #F4F6F9;
+            --gov-card-bg: #FFFFFF;
+            --gov-border: #D6DCE5;
+            /* Status Colors */
+            --status-pending: #FFC107;
+            --status-in-progress: #0D6EFD;
+            --status-resolved: #198754;
+            --status-rejected: #DC3545;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gov-background);
+            min-height: 100vh;
+        }
+        /* Government Header */
+        
+        .gov-header {
+            background: linear-gradient(135deg, var(--gov-primary) 0%, #082d6b 100%);
+            padding: 0;
+            box-shadow: 0 4px 20px rgba(11, 61, 145, 0.2);
+        }
+        
+        .gov-header .navbar {
+            padding: 0.75rem 0;
+        }
+        
+        .gov-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .gov-brand-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .gov-brand-text h4 {
+            color: white;
+            font-weight: 700;
+            font-size: 1.35rem;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+        
+        .gov-brand-text span {
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 500;
+        }
+        
+        .gov-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.12);
+            padding: 8px 16px;
+            border-radius: 50px;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--gov-secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gov-primary);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 10px;
+            background: rgba(11, 61, 145, 0.08);
+            border: 2px solid rgba(11, 61, 145, 0.2);
+            transition: all 0.3s;
+            margin-bottom: 1.5rem;
+        }
+        
+        .back-btn:hover {
+            background: var(--gov-primary);
+            color: white;
+            transform: translateX(-5px);
+        }
+        /* Main Content */
+        
+        .main-content {
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        /* Section Headers */
+        
+        .section-header {
+            background: linear-gradient(135deg, var(--gov-primary) 0%, #082d6b 100%);
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 24px rgba(11, 61, 145, 0.25);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-header h4 {
+            color: white;
+            font-weight: 700;
+            margin: 0;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section-header h4 i {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        /* Form Card */
+        
+        .form-card {
+            background: var(--gov-card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.06);
+            border: 3px solid var(--gov-border);
+        }
+        /* Complaint Info Box */
+        
+        .complaint-info-box {
+            background: linear-gradient(135deg, rgba(11, 61, 145, 0.06) 0%, rgba(11, 61, 145, 0.02) 100%);
+            border-radius: 16px;
+            padding: 1.75rem;
+            margin-bottom: 2rem;
+            border: 2px solid var(--gov-border);
+        }
+        
+        .complaint-info-box h5 {
+            color: var(--gov-primary);
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            font-size: 1.25rem;
+        }
+        
+        .complaint-id-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--gov-primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .info-row i {
+            color: var(--gov-primary);
+            width: 20px;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 100px;
+        }
+        /* Form Elements */
+        
+        .form-label {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-label i {
+            color: var(--gov-primary);
+        }
+        
+        .form-select,
+        .form-control {
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            border: 2px solid var(--gov-border);
+            background: var(--gov-card-bg);
+            transition: all 0.3s;
+        }
+        
+        .form-select:focus,
+        .form-control:focus {
+            border-color: var(--gov-secondary);
+            box-shadow: 0 0 0 4px rgba(30, 111, 217, 0.15);
+        }
+        
+        .form-select {
+            padding: 14px 18px;
+            font-weight: 500;
+        }
+        /* Status Options Styling */
+        
+        .form-select option {
+            padding: 12px;
+            font-weight: 600;
+        }
+        /* Submit Button */
+        
+        .submit-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--gov-primary) 0%, var(--gov-secondary) 100%);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(11, 61, 145, 0.3);
+            margin-top: 1rem;
+        }
+        
+        .submit-btn:hover {
+            background: linear-gradient(135deg, var(--gov-secondary) 0%, var(--gov-primary) 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(11, 61, 145, 0.4);
+            color: white;
+        }
+        /* Current Status Badge */
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .status-badge.under-review {
+            background: rgba(108, 117, 125, 0.15);
+            color: #6c757d;
+            border: 2px solid rgba(108, 117, 125, 0.3);
+        }
+        
+        .status-badge.assigned {
+            background: rgba(11, 61, 145, 0.15);
+            color: var(--gov-primary);
+            border: 2px solid rgba(11, 61, 145, 0.3);
+        }
+        
+        .status-badge.in-progress {
+            background: rgba(13, 110, 253, 0.15);
+            color: var(--status-in-progress);
+            border: 2px solid rgba(13, 110, 253, 0.3);
+        }
+        
+        .status-badge.resolved {
+            background: rgba(25, 135, 84, 0.15);
+            color: var(--status-resolved);
+            border: 2px solid rgba(25, 135, 84, 0.3);
+        }
+        /* Language Dropdown */
+        
+        .lang-dropdown .dropdown-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+        
+        .lang-dropdown .dropdown-menu {
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border: none;
+            padding: 0.5rem;
+        }
+        
+        .lang-dropdown .dropdown-item {
+            border-radius: 8px;
+            padding: 10px 16px;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .lang-dropdown .dropdown-item:hover {
+            background: var(--gov-background);
+            color: var(--gov-primary);
+        }
+        /* Animations */
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .form-card {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        /* File Upload Styles */
+        
+        .upload-box {
+            border: 2px dashed var(--gov-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            background: var(--gov-background);
+            transition: all 0.3s;
+        }
+        
+        .upload-box:hover {
+            border-color: var(--gov-secondary);
+            background: rgba(30, 111, 217, 0.05);
+        }
+        
+        .upload-box input[type="file"] {
+            padding: 10px 0;
+        }
+        
+        .current-file {
+            background: linear-gradient(135deg, rgba(25, 135, 84, 0.1) 0%, rgba(25, 135, 84, 0.05) 100%);
+            border: 2px solid rgba(25, 135, 84, 0.3);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            display: inline-block;
+        }
+        
+        .file-link {
+            color: var(--status-resolved);
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .file-link:hover {
+            color: #146c43;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Government Header -->
+    <header class="gov-header">
+        <div class="container-fluid px-4">
+            <nav class="navbar navbar-expand-lg">
+                <div class="gov-brand">
+                    <div class="gov-brand-icon">
+                        <i class="fas fa-landmark"></i>
+                    </div>
+                    <div class="gov-brand-text">
+                        <h4>Citizen Grievance Management System</h4>
+                        <span>Government Digital Services</span>
+                    </div>
+
+                    <div class="gov-header-actions">
+                        <!-- Language Selector -->
+                        <div class="dropdown lang-dropdown">
+                            <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-globe me-2"></i>
+                            {% if current_language == 'en' %}English{% elif current_language == 'hi' %}हिंदी{% elif current_language == 'te' %}తెలుగు{% elif current_language == 'es' %}Español{% elif current_language == 'fr' %}Français{% else %}English{% endif %}
+                        </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/set_language/en"><i class="fas fa-check me-2"></i>English</a></li>
+                                <li><a class="dropdown-item" href="/set_language/hi"><i class="fas fa-check me-2"></i>हिंदी</a></li>
+                                <li><a class="dropdown-item" href="/set_language/te"><i class="fas fa-check me-2"></i>తెలుగు</a></li>
+                                <li><a class="dropdown-item" href="/set_language/es"><i class="fas fa-check me-2"></i>Español</a></li>
+                                <li><a class="dropdown-item" href="/set_language/fr"><i class="fas fa-check me-2"></i>Français</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- User Profile -->
+                        <div class="user-profile">
+                            <div class="user-avatar">
+                                {{ current_user.name[0]|upper }}
+                            </div>
+                            <div class="d-none d-md-block">
+                                <div style="font-weight: 500; font-size: 0.9rem;">{{ current_user.name }}</div>
+                                <div style="font-size: 0.75rem; opacity: 0.8;">Official</div>
+                            </div>
+
+                            <!-- Logout Button -->
+                            <a href="/logout" class="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span class="d-none d-md-inline">Logout</span>
+                            </a>
+                        </div>
+            </nav>
+            </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Back Button -->
+        <a href="/official/dashboard" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+
+        <!-- Page Header -->
+        <div class="section-header">
+            <h4><i class="fas fa-edit me-2"></i>Update Complaint Status</h4>
+        </div>
+
+        <!-- Form Card -->
+        <div class="form-card">
+            <!-- Complaint Information Box -->
+            <div class="complaint-info-box">
+                <div class="complaint-id-badge">
+                    <i class="fas fa-file-alt"></i> {{ complaint.complaint_id }}
+                </div>
+                <h5>{{ complaint.title }}</h5>
+
+                <div class="info-row">
+                    <i class="fas fa-tag"></i>
+                    <span class="info-label">Category:</span> {{ complaint.category }}
+                </div>
+
+                <div class="info-row">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span class="info-label">Location:</span> {{ complaint.location }}
+                </div>
+
+                <div class="info-row">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="info-label">Submitted:</span> {{ complaint.created_at.strftime('%d %b %Y at %H:%M') }}
+                </div>
+
+                <div class="info-row">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="info-label">Current Status:</span>
+                    <span class="status-badge {{ complaint.status.lower().replace(' ', '-') }}">
+                        {% if complaint.status == 'Under Review' %}<i class="fas fa-search"></i>{% elif complaint.status == 'Assigned' %}<i class="fas fa-user-check"></i>{% elif complaint.status == 'In Progress' %}<i class="fas fa-cog"></i>{% elif complaint.status == 'Resolved' %}<i class="fas fa-check-circle"></i>{% endif %}
+                        {{ complaint.status }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Update Form -->
+            <form method="POST" enctype="multipart/form-data">
+                <div class="mb-4">
+                    <label class="form-label">
+                        <i class="fas fa-tasks"></i> Update Status
+                    </label>
+                    <select class="form-select" name="status" required>
+                        <option value="Under Review" {% if complaint.status == 'Under Review' %}selected{% endif %}>Under Review - Complaint is being examined</option>
+                        <option value="Assigned" {% if complaint.status == 'Assigned' %}selected{% endif %}>Assigned - Assigned to official</option>
+                        <option value="In Progress" {% if complaint.status == 'In Progress' %}selected{% endif %}>In Progress - Work is underway</option>
+                        <option value="Resolved" {% if complaint.status == 'Resolved' %}selected{% endif %}>Resolved - Issue has been fixed</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">
+                        <i class="fas fa-comment-alt"></i> Remarks / Updates
+                    </label>
+                    <textarea class="form-control" name="remarks" rows="5" placeholder="Describe the actions taken or any updates about the complaint resolution...">{{ complaint.remarks or '' }}</textarea>
+                </div>
+
+                <!-- File Upload Section -->
+                <div class="mb-4">
+                    <label class="form-label">
+                        <i class="fas fa-upload"></i> Upload Evidence (Optional)
+                    </label>
+                    <div class="upload-box">
+                        <input type="file" class="form-control" name="official_evidence_file" id="official_evidence_file" accept="image/*,video/*">
+                        <small class="text-muted">Accepted formats: PNG, JPG, JPEG, GIF, MP4, AVI, MOV (Max 10MB)</small>
+                    </div>
+                </div>
+
+                <!-- Show Current Uploaded File -->
+                {% if complaint.official_image_path %}
+                <div class="mb-4">
+                    <label class="form-label">
+                        <i class="fas fa-file-alt"></i> Previously Uploaded Evidence
+                    </label>
+                    <div class="current-file">
+                        <a href="{{ url_for('static', filename='uploads/' + complaint.official_image_path) }}" target="_blank" class="file-link">
+                            <i class="fas fa-eye"></i> View Uploaded File
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-save"></i>
+                    Update Status
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

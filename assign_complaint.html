@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Complaint - CGMP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+         :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+        }
+        
+        body {
+            background: #f8f9fa;
+        }
+        
+        .sidebar {
+            min-height: 100vh;
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .sidebar a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            padding: 12px 20px;
+            display: block;
+            transition: all 0.3s;
+        }
+        
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .form-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .complaint-details {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-row {
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            width: 150px;
+        }
+        
+        .detail-value {
+            color: #666;
+        }
+        
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            background: #fafafa;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--secondary-color);
+            background: rgba(52, 152, 219, 0.05);
+        }
+        
+        .upload-area input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3 sidebar p-0">
+                <div class="p-4 text-center">
+                    <h4><i class="fas fa-building-columns me-2"></i>CGMP</h4>
+                    <p class="mb-0">Admin Portal</p>
+                </div>
+                <hr>
+                <a href="/admin/dashboard"><i class="fas fa-home me-2"></i>Dashboard</a>
+                <a href="/admin/officials"><i class="fas fa-users me-2"></i>Manage Officials</a>
+                <a href="/admin/reports"><i class="fas fa-chart-bar me-2"></i>Reports</a>
+                <a href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+            </div>
+
+            <div class="col-md-9 p-4">
+                <div class="mb-4">
+                    <a href="/admin/dashboard" class="text-muted"><i class="fas fa-arrow-left me-1"></i>Back to Dashboard</a>
+                </div>
+
+                <div class="form-card">
+                    <h3 class="mb-4"><i class="fas fa-user-plus me-2"></i>Assign</h3>
+
+                    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %} {% endif %} {% endwith %}
+
+                    <!-- Complaint Details -->
+                    <div class="complaint-details">
+                        <h5 class="mb-3">Complaint Details</h5>
+                        <div class="detail-row">
+                            <span class="detail-label">Complaint ID:</span>
+                            <span class="detail-value">{{ complaint.complaint_id }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Category:</span>
+                            <span class="detail-value">{{ complaint.category }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Division:</span>
+                            <span class="detail-value">{{ complaint.division or 'N/A' }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Subdivision:</span>
+                            <span class="detail-value">{{ complaint.subdivision or 'N/A' }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Location:</span>
+                            <span class="detail-value">{{ complaint.location }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Status:</span>
+                            <span class="detail-value">
+                                <span class="badge bg-{{ 'warning' if complaint.status == 'Submitted' else 'info' if complaint.status == 'Assigned' else 'success' if complaint.status == 'Resolved' else 'primary' }}">
+                                    {{ complaint.status }}
+                                </span>
+                            </span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Submitted:</span>
+                            <span class="detail-value">{{ complaint.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                        </div>
+                        {% if complaint.image_path %}
+                        <div class="detail-row">
+                            <span class="detail-label">Citizen Evidence:</span>
+                            <span class="detail-value">
+                                {% if complaint.image_path.lower().endswith(('.mp4', '.avi', '.mov')) %}
+                                <video controls style="max-width: 300px; border-radius: 5px;">
+                                    <source src="{{ url_for('static', filename='uploads/' + complaint.image_path) }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                                {% else %}
+                                <img src="{{ url_for('static', filename='uploads/' + complaint.image_path) }}" 
+                                     alt="Citizen Evidence" style="max-width: 300px; border-radius: 5px; cursor: pointer;" 
+                                     onclick="window.open(this.src, '_blank')">
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% endif %} {% if complaint.admin_image_path %}
+                        <div class="detail-row">
+                            <span class="detail-label">Admin Evidence:</span>
+                            <span class="detail-value">
+                                {% if complaint.admin_image_path.lower().endswith(('.mp4', '.avi', '.mov')) %}
+                                <video controls style="max-width: 300px; border-radius: 5px;">
+                                    <source src="{{ url_for('static', filename='uploads/' + complaint.admin_image_path) }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                                {% else %}
+                                <img src="{{ url_for('static', filename='uploads/' + complaint.admin_image_path) }}" 
+                                     alt="Admin Evidence" style="max-width: 300px; border-radius: 5px; cursor: pointer;" 
+                                     onclick="window.open(this.src, '_blank')">
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% endif %} {% if complaint.official_image_path %}
+                        <div class="detail-row">
+                            <span class="detail-label">Official Evidence:</span>
+                            <span class="detail-value">
+                                {% if complaint.official_image_path.lower().endswith(('.mp4', '.avi', '.mov')) %}
+                                <video controls style="max-width: 300px; border-radius: 5px;">
+                                    <source src="{{ url_for('static', filename='uploads/' + complaint.official_image_path) }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                                {% else %}
+                                <img src="{{ url_for('static', filename='uploads/' + complaint.official_image_path) }}" 
+                                     alt="Official Evidence" style="max-width: 300px; border-radius: 5px; cursor: pointer;" 
+                                     onclick="window.open(this.src, '_blank')">
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Assign Form -->
+                    <form method="POST" action="/admin/assign/{{ complaint.complaint_id }}">
+                        <div class="mb-4">
+                            <label class="form-label"><i class="fas fa-user-tie me-2"></i>Select Official</label>
+                            <select class="form-select" name="official_id" required>
+                                <option value="" selected disabled>Choose an official to assign</option>
+                                {% for official in officials %}
+                                <option value="{{ official.id }}">
+                                    {{ official.name }} - {{ official.department }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check me-2"></i>Assign
+                            </button>
+                            <a href="/admin/dashboard" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Admin file upload handling
+        function handleAdminFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // Check file size (10MB max)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('File size must be less than 10MB');
+                    removeAdminFile();
+                    return;
+                }
+
+                // Show file preview
+                const filePreview = document.getElementById('adminFilePreview');
+                const fileName = document.getElementById('adminFileName');
+                const fileIcon = document.getElementById('adminFileIcon');
+
+                fileName.textContent = file.name;
+
+                // Set icon based on file type
+                if (file.type.startsWith('image/')) {
+                    fileIcon.className = 'fas fa-image me-2 text-success';
+                } else if (file.type.startsWith('video/')) {
+                    fileIcon.className = 'fas fa-video me-2 text-danger';
+                } else {
+                    fileIcon.className = 'fas fa-file-alt me-2 text-primary';
+                }
+
+                filePreview.style.display = 'block';
+            }
+        }
+
+        function removeAdminFile() {
+            const fileInput = document.getElementById('adminEvidenceFile');
+            const filePreview = document.getElementById('adminFilePreview');
+
+            fileInput.value = ''; // Clear file input
+            filePreview.style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>
